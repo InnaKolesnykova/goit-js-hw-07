@@ -1,50 +1,38 @@
-import { galleryItems } from "./gallery-items.js";
-// Change code below this line
+import { galleryItems } from './gallery-items.js';
 
-const galleryItemsMarkup = galleryItems
-  .map((item) => {
-    return `
-    <div class="gallery__item">
-    <a class="gallery__link" href="${item.original}">
-      <img
-        class="gallery__image"
-        src="${item.preview}"
-        data-source="${item.original}"
-        alt="${item.description}"
-      />
-    </a>
-  </div>`;
-  })
-  .join("");
+document.addEventListener('DOMContentLoaded', () => {
+  const galleryContainer = document.querySelector('.gallery');
 
-const galleryElem = document.querySelector("ul.gallery");
-
-galleryElem.innerHTML = galleryItemsMarkup;
-galleryElem.addEventListener("click", selectItem);
-
-function selectItem(event) {
-  event.preventDefault();
-
-  if (!event.target.classList.contains("gallery__image")) {
-    return;
+  // Функція для створення розмітки галереї
+  function createGalleryItems(items) {
+    return items
+      .map(({ original, preview, description }) => {
+        return `
+          <li class="gallery__item">
+            <a class="gallery__link" href="${original}">
+              <img class="gallery__image" src="${preview}" data-source="${original}" alt="${description}" />
+            </a>
+          </li>
+        `;
+      })
+      .join('');
   }
 
-  const instance = basicLightbox.create(
-    `<img src="${event.target.dataset.source}">`,
-    {
-      onShow: (instance) => {
-        document.addEventListener("keydown", onEscKeyPress);
-      },
-      onClose: (instance) => {
-        document.removeEventListener("keydown", onEscKeyPress);
-      },
-    }
-  );
-  instance.show();
+  // Додавання розмітки галереї до контейнера
+  galleryContainer.innerHTML = createGalleryItems(galleryItems);
 
-  function onEscKeyPress(event) {
-    if (event.code === "Escape") {
-      instance.close();
+  // Додаємо обробник подій для відкриття модального вікна
+  galleryContainer.addEventListener('click', event => {
+    event.preventDefault(); // Заборона стандартної поведінки переходу за посиланням
+
+    if (event.target.tagName === 'IMG') {
+      const imageUrl = event.target.dataset.source;
+
+      const lightbox = basicLightbox.create(`
+        <img src="${imageUrl}" width="800" height="600">
+      `);
+
+      lightbox.show();
     }
-  }
-}
+  });
+});

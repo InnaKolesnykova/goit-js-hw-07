@@ -1,33 +1,32 @@
 import { galleryItems } from './gallery-items.js';
-// Change code below this line
 
-const galleryElem = document.querySelector('.gallery');
+document.addEventListener('DOMContentLoaded', () => {
+  const galleryContainer = document.querySelector('.gallery');
 
-const galleryMarkup = galleryItems
-  .map(
-    ({ preview, original, description }) =>
-      `<a class="gallery__item" href="${original}">
-      <img
-         class="gallery__image"
-         src="${preview}"
-         alt="${description}"
-        />
-      </a>`
-  )
-  .join('');
-
-galleryElem.insertAdjacentHTML('beforeend', galleryMarkup);
-
-galleryElem.addEventListener('click', event => {
-  if (event.target.nodeName !== 'IMG') {
-    return;
+  // Функція для створення розмітки галереї
+  function createGalleryItems(items) {
+    return items
+      .map(({ original, preview, description }) => {
+        return `
+          <li class="gallery__item">
+            <a class="gallery__link" href="${original}">
+              <img class="gallery__image" src="${preview}" alt="${description}" />
+            </a>
+          </li>
+        `;
+      })
+      .join('');
   }
+
+  // Додавання розмітки галереї до контейнера
+  galleryContainer.innerHTML = createGalleryItems(galleryItems);
+
+  // Підключення бібліотеки SimpleLightbox
+  const lightbox = new SimpleLightbox('.gallery a', {
+    captionsData: 'alt',
+    captionDelay: 250
+  });
 });
 
-new SimpleLightbox('.gallery a', {
-  captions: true,
-  captionType: 'attr',
-  captionsData: 'alt',
-  captionPosition: 'bottom',
-  captionDelay: 250,
-});
+
+console.log(galleryItems);
